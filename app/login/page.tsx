@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
+import { JSX, SVGProps } from "react";
 
 export default function Login({
   searchParams,
@@ -25,7 +25,7 @@ export default function Login({
       return redirect("/login?message=Could not authenticate user");
     }
 
-    return redirect("/protected");
+    return redirect("/notes");
   };
 
   const signUp = async (formData: FormData) => {
@@ -52,68 +52,89 @@ export default function Login({
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
-      <Link
-        href="/"
-        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>{" "}
-        Back
-      </Link>
-
-      <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
-        <label className="text-md" htmlFor="email">
-          Email
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          name="email"
-          placeholder="you@example.com"
-          required
-        />
-        <label className="text-md" htmlFor="password">
-          Password
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          required
-        />
-        <SubmitButton
-          formAction={signIn}
-          className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing In..."
-        >
-          Sign In
-        </SubmitButton>
-        <SubmitButton
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing Up..."
-        >
-          Sign Up
-        </SubmitButton>
-        {searchParams?.message && (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
-          </p>
-        )}
-      </form>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <h2 className="text-2xl font-bold text-gray-900">Note Harbor</h2>
+          </div>
+        </div>
+        <form className="space-y-6">
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 p-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              id="email"
+              placeholder="you@example.com"
+              required
+              type="email"
+              name="email"
+            />
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <input
+              className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 p-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500  sm:text-sm"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+              type="password"
+            />
+          </div>
+          <div className="flex flex-col space-y-4">
+            <SubmitButton
+              formAction={signIn}
+              className="bg-green-500 rounded-md px-4 py-2 text-white mb-2"
+              pendingText="Signing In..."
+            >
+              Sign In
+            </SubmitButton>
+            <SubmitButton
+              formAction={signUp}
+              className="w-full bg-blue-700 rounded-md px-4 py-2 text-white mb-2"
+              pendingText="Signing Up..."
+            >
+              Sign Up
+            </SubmitButton>
+            {searchParams?.message && (
+              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+                {searchParams.message}
+              </p>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
+  );
+}
+
+function PencilIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+      <path d="m15 5 4 4" />
+    </svg>
   );
 }
