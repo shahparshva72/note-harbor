@@ -46,7 +46,7 @@ const MockNotes = [
   },
 ];
 
-export default async function ProtectedPage() {
+export default async function ArchivedNotes() {
   const supabase = createClient();
 
   const {
@@ -61,13 +61,13 @@ export default async function ProtectedPage() {
     .from("notes")
     .select("*")
     .eq("user_id", user.id)
-    .neq("is_deleted", true)
+    .eq("is_archived", true)
     .order("updated_at", { ascending: false });
 
   return (
     <div className="flex-1 p-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">All Notes</h2>
+          <h2 className="text-2xl font-bold">Archived Notes</h2>
           <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
