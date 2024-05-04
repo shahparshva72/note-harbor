@@ -1,29 +1,38 @@
-// components/Layout.tsx
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import AuthButton from "@/components/AuthButton";
 import {
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenu,
-} from "@/components/ui/dropdown-menu";
-import {
   ArchiveIcon,
-  FilterIcon,
   LayoutGridIcon,
-  ListOrderedIcon,
-  PaletteIcon,
   StickyNoteIcon,
-  TagIcon,
   Trash2Icon,
 } from "lucide-react";
 import AddNoteButton from "@/components/AddNoteButton";
+import LinkButton from "@/components/LinkButton";
 
-export default async function Layout({ children }) {
+const links = [
+  {
+    title: "All Notes",
+    href: "/notes",
+    Icon: LayoutGridIcon,
+  },
+  {
+    title: "Archived",
+    href: "/notes/archived",
+    Icon: ArchiveIcon,
+  },
+  {
+    title: "Trash",
+    href: "/notes/trash",
+    Icon: Trash2Icon,
+  },
+];
+
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const supabase = createClient();
 
   const {
@@ -43,27 +52,9 @@ export default async function Layout({ children }) {
           <h1 className="text-xl font-bold">Note Harbor</h1>
         </div>
         <nav className="flex flex-col space-y-2">
-          <Link
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-gray-200"
-            href="/notes"
-          >
-            <LayoutGridIcon className="h-4 w-4" />
-            All Notes
-          </Link>
-          <Link
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-gray-200"
-            href="/notes/archived"
-          >
-            <ArchiveIcon className="h-4 w-4" />
-            Archived
-          </Link>
-          <Link
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-gray-200"
-            href="/notes/trash"
-          >
-            <Trash2Icon className="h-4 w-4" />
-            Trash
-          </Link>
+          {links.map((link, index) => (
+            <LinkButton href={link.href} title={link.title} key={index} />
+          ))}
         </nav>
         <div className="mt-auto justify-center">
           <AddNoteButton user={user} />
@@ -74,9 +65,7 @@ export default async function Layout({ children }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 md:p-8">
-        {children}
-      </div>
+      <div className="flex-1 p-6 md:p-8">{children}</div>
     </div>
   );
 }

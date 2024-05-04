@@ -22,8 +22,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -33,8 +35,12 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        {children}
-        <Toaster />
+        <div className="">
+              <main className="">{children}</main>
+              <Toaster />
+            </div>
+        {modal}
+        <div id="modal-root" />
       </body>
     </html>
   );

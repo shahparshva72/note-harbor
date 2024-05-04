@@ -41,8 +41,7 @@ const NoteCard = ({
   const deleteNote = async () => {
     try {
       const supabase = createClient();
-      // update is_deleted to true instead of deleting the note
-      await supabase.from("notes").update({ is_deleted: true }).match({ id });
+      await supabase.from("notes").update({ is_deleted: true, is_archived: false }).match({ id });
       router.refresh();
       toast.success("Note moved to trash.");
     } catch (error: any) {
@@ -53,15 +52,23 @@ const NoteCard = ({
   const archiveNote = async () => {
     try {
       const supabase = createClient();
-      // update is_archived to true instead of deleting the note
-      await supabase.from("notes").update({ is_archived: true }).match({ id });
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return router.push("/login");
+      }
+      await supabase
+        .from("notes")
+        .update({ is_archived: true })
+        .match({ id })
+        .eq("user_id", user.id);
       router.refresh();
       toast.success("Note archived.");
     } catch (error: any) {
       console.error("Error archiving the note:", error.message);
     }
-  }
-
+  };
 
   return (
     <Card className="relative flex flex-col gap-2 rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:bg-gray-100">
@@ -75,10 +82,6 @@ const NoteCard = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <FileEditIcon className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={archiveNote}>
               <ArchiveIcon className="mr-2 h-4 w-4" />
               Archive
