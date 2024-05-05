@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { Textarea } from "@/components/ui/textarea";
 
 const AddNoteView = () => {
   const router = useRouter();
@@ -39,16 +39,12 @@ const AddNoteView = () => {
 
   return (
     <form className="flex flex-col gap-1 w-full p-1" action={addANote}>
+      <h2 className="text-2xl font-bold">Add a Note</h2>
       <div className="space-y-1">
         <Input id="title" placeholder="Enter a title" name="title" />
       </div>
       <div className="space-y-1">
-        <Textarea
-          className="h-2/3"
-          id="note"
-          placeholder="Write your note here..."
-          name="note"
-        />
+        <Textarea placeholder="Write your note here..." name="note" />
       </div>
       <div className="flex justify-end gap-2 mt-auto">
         <Button>Add</Button>

@@ -38,11 +38,12 @@ const EditNoteView = (props: { id: Number }) => {
   }, [id, supabase]);
 
   const editNote = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.stopPropagation();
     event.preventDefault();
     const { title, description } = stateOfInput;
     try {
       await supabase.from("notes").update({ title, description }).eq("id", id);
-      toast.success("Note updated.");
+      toast.success(`${title} has been updated!`);
       router.back();
     } catch (error: any) {
       console.error("Error editing the note:", error.message);

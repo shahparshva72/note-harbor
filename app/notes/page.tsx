@@ -9,10 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenu,
 } from "@/components/ui/dropdown-menu";
-import {
-  CalendarIcon,
-  ListOrderedIcon,
-} from "lucide-react";
+import { CalendarIcon, ListOrderedIcon } from "lucide-react";
 import NoteCardGrid from "@/components/NoteCardGrid";
 
 export default async function ProtectedPage() {
@@ -58,7 +55,7 @@ export default async function ProtectedPage() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        <NoteCardGrid notes={notes} />
+        {notes ? <NoteCardGrid notes={notes} /> : <div>Loading...</div>}
       </div>
     </div>
   );

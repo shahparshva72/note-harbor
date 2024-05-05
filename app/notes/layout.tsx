@@ -6,6 +6,7 @@ import {
   LayoutGridIcon,
   StickyNoteIcon,
   Trash2Icon,
+  MenuIcon
 } from "lucide-react";
 import AddNoteButton from "@/components/AddNoteButton";
 import LinkButton from "@/components/LinkButton";
