@@ -6,7 +6,6 @@ import {
   LayoutGridIcon,
   StickyNoteIcon,
   Trash2Icon,
-  MenuIcon
 } from "lucide-react";
 import AddNoteButton from "@/components/AddNoteButton";
 import LinkButton from "@/components/LinkButton";
@@ -54,7 +53,7 @@ export default async function Layout({
         </div>
         <nav className="flex flex-col space-y-2">
           {links.map((link, index) => (
-            <LinkButton href={link.href} title={link.title} key={index} />
+            <LinkButton href={link.href} title={link.title} key={index}/>
           ))}
         </nav>
         <div className="mt-auto justify-center">

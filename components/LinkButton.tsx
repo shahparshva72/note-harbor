@@ -3,13 +3,14 @@
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {Button} from "@/components/ui/button";
 
 interface LinkButtonProps {
   href: string;
   title: string;
 }
 
-const LinkButton: React.FC<LinkButtonProps> = ({ href, title }) => {
+const LinkButton: React.FC<LinkButtonProps> = ({ href, title}) => {
     const currentPath = usePathname();
     return (
         <Link
@@ -19,7 +20,6 @@ const LinkButton: React.FC<LinkButtonProps> = ({ href, title }) => {
                 currentPath === href ? "bg-gray-200" : ""
             }`}
         >
-            {/* <Icon className="h-5 w-5" /> */}
             <span>{title}</span>
         </Link>
     );

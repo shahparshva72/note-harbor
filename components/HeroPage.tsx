@@ -9,7 +9,10 @@ export default function Header() {
       <header className="w-full p-4">
         <nav className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Note Harbor</h1>
-          <AuthButton className="py-1.5 px-4 rounded-md no-underline bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 justify-center" />
+          <div className="flex gap-4">
+          <AuthButton mode="register" className="py-1.5 px-4 rounded-md no-underline bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 justify-center" />
+          <AuthButton mode="login" className="py-1.5 px-4 rounded-md no-underline bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 justify-center" />
+          </div>
         </nav>
       </header>
       <section className="flex flex-col items-center justify-center flex-grow w-full">

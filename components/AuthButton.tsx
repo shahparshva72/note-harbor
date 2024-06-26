@@ -6,7 +6,7 @@ interface AuthButtonProps {
   className?: string;
 }
 
-export default async function AuthButton({ className }: AuthButtonProps) {
+export default async function AuthButton({ mode, className }: { mode?: "register" | "login", className: string }) {
   const supabase = createClient();
 
   const {
@@ -31,10 +31,10 @@ export default async function AuthButton({ className }: AuthButtonProps) {
     </div>
   ) : (
     <Link
-      href="/login"
-      className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+      href={mode === "register" ? "/register" : "/login"}
+      className="py-2 px-3 flex rounded-md no-underline bg-black hover:bg-black/80 text-white hover:text-white/80 transition-colors duration-200 ease-in-out"
     >
-      Login
+      {mode === "register" ? "Sign up" : "Login"}
     </Link>
   );
 }

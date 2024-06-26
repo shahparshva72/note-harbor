@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card } from "@/components/ui/card";
 import {
-  FileEditIcon,
   ArchiveIcon,
   TrashIcon,
   MoreHorizontalIcon,
+  NotebookPenIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -29,13 +29,15 @@ interface NoteCardProps {
 
 const supabase = createClient();
 
-const withEventHandlers = (fn: () => Promise<void>) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-  event.stopPropagation();
-  event.preventDefault();
-  fn().catch((error) => {
-    console.error(error.message);
-  });
-};
+const withEventHandlers =
+  (fn: () => Promise<void>) =>
+  (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn().catch((error) => {
+      console.error(error.message);
+    });
+  };
 
 const NoteCard = ({
   id,
@@ -49,17 +51,26 @@ const NoteCard = ({
   const router = useRouter();
 
   const deleteNote = withEventHandlers(async () => {
-    await supabase.from("notes").update({ is_deleted: true, is_archived: false }).match({ id });
+    await supabase
+      .from("notes")
+      .update({ is_deleted: true, is_archived: false })
+      .match({ id });
     router.refresh();
     toast.success("Note moved to trash.");
   });
 
   const archiveNote = withEventHandlers(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       return router.push("/login");
     }
-    await supabase.from("notes").update({ is_archived: true }).match({ id }).eq("user_id", user.id);
+    await supabase
+      .from("notes")
+      .update({ is_archived: true })
+      .match({ id })
+      .eq("user_id", user.id);
     router.refresh();
     toast.success("Note archived.");
   });
@@ -71,7 +82,10 @@ const NoteCard = ({
   });
 
   const moveBackToNotes = withEventHandlers(async () => {
-    await supabase.from("notes").update({ is_deleted: false, is_archived: false }).match({ id });
+    await supabase
+      .from("notes")
+      .update({ is_deleted: false, is_archived: false })
+      .match({ id });
     router.refresh();
     toast.success("Note restored.");
   });
@@ -101,14 +115,14 @@ const NoteCard = ({
             )}
             {isDeleted ? (
               <>
-              <DropdownMenuItem onClick={moveBackToNotes}>
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Restore
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={permanentlyDeleteNote}>
-                <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
-                Permanently delete
-              </DropdownMenuItem>
+                <DropdownMenuItem onClick={moveBackToNotes}>
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Restore
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={permanentlyDeleteNote}>
+                  <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
+                  Permanently delete
+                </DropdownMenuItem>
               </>
             ) : (
               <DropdownMenuItem onClick={deleteNote}>
@@ -116,6 +130,13 @@ const NoteCard = ({
                 Delete
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem>
+              <NotebookPenIcon
+                className="mr-2 h-4 w-4"
+                onClick={() => router.push(`/note/${id}`)}
+              />
+              Edit
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -134,9 +155,11 @@ const NoteCard = ({
           </span>
         </p>
         <p>
-          Last updated at{" "}
+          Last updated:{" "}
           <span className="font-medium">
             {new Date(updatedAt).toLocaleTimeString("en-US", {
+              month: "short",
+              day: "numeric",
               hour: "2-digit",
               minute: "2-digit",
             })}

@@ -15,6 +15,7 @@ interface NoteCardGridProps {
 }
 
 const NoteCardGrid = ({ notes }: NoteCardGridProps) => {
+
   return notes.map((note) => (
     <Link key={note.id} href={`/note/${note.id}`}>
         <NoteCard

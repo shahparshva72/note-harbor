@@ -1,19 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenu,
-} from "@/components/ui/dropdown-menu";
-import {
-  CalendarIcon,
-  ListOrderedIcon,
-} from "lucide-react";
-import NoteCardGrid from "@/components/NoteCardGrid";
+import NotesPageComponent from "@/components/NotesPageComponent";
 
 export default async function ProtectedPage() {
   const supabase = createClient();
@@ -34,32 +21,7 @@ export default async function ProtectedPage() {
     .eq("is_archived", true)
     .order("inserted_at", { ascending: false });
 
-  return (
-    <div className="flex-1 p-6 md:p-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Archived Notes</h2>
-        <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <ListOrderedIcon className="h-5 w-5" />
-                <span className="sr-only">Sort</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Date created
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {notes ? <NoteCardGrid notes={notes} /> : <div>Loading...</div>}
-      </div>
-    </div>
-  );
+    return (
+      <NotesPageComponent notes={notes} noteType="archived" />
+    );
 }
