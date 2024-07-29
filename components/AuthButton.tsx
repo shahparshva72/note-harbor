@@ -1,12 +1,19 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface AuthButtonProps {
   className?: string;
 }
 
-export default async function AuthButton({ mode, className }: { mode?: "register" | "login", className: string }) {
+export default async function AuthButton({
+  mode,
+  className,
+}: {
+  mode?: "register" | "login";
+  className?: string;
+}) {
   const supabase = createClient();
 
   const {
@@ -24,17 +31,16 @@ export default async function AuthButton({ mode, className }: { mode?: "register
   return user ? (
     <div className={`flex items-center ${className}`}>
       <form action={signOut}>
-        <button type="submit">
-          Logout
-        </button>
+        <Button type="submit">Logout</Button>
       </form>
     </div>
   ) : (
-    <Link
-      href={mode === "register" ? "/register" : "/login"}
-      className="py-2 px-3 flex rounded-md no-underline bg-black hover:bg-black/80 text-white hover:text-white/80 transition-colors duration-200 ease-in-out"
-    >
-      {mode === "register" ? "Sign up" : "Login"}
-    </Link>
+    <Button asChild>
+      <Link
+        href={mode === "register" ? "/register" : "/login"}
+      >
+        {mode === "register" ? "Sign up" : "Login"}
+      </Link>
+    </Button>
   );
 }

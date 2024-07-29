@@ -10,5 +10,6 @@
 - [x] Setup Modal for Add and Edit Note
 - [ ] React Markdown Text Editor
 - [x] Delete Note
-- [ ] Redesign Login Page
+- [x] Redesign Login Page
+- [ ] Improve the archive and delete modal load and delay
 

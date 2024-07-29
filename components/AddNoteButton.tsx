@@ -32,7 +32,7 @@ const AddNoteButton: React.FC<AddNoteButtonProps> = ({ user }) => {
 
   return (
     <Button
-      className="mt-4 bg-black text-white font-semibold w-full"
+      className="mt-4 text-white font-semibold w-full py-1.5"
       asChild
     >
       <Link href="add-note">

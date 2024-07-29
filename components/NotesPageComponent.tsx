@@ -40,24 +40,20 @@ const NotesPageComponent = (props: {
         {props.noteType === "deleted" ? (
           <h1 className="text-2xl font-bold">Deleted Notes</h1>
         ) : null}
-        <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <ListOrderedIcon className="h-5 w-5" />
-                <span className="sr-only">Sort</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={sortByCreatedDate}>
+        <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost">
+              <ListOrderedIcon className="h-5 w-5" />
+              <span className="sr-only">Sort</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={sortByCreatedDate}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 Date created
               </DropdownMenuItem>
-            </DropdownMenuContent>
+          </DropdownMenuContent>
           </DropdownMenu>
-        </div>
       </div>
       {sortedNotes && sortedNotes.length === 0 ? (
         <div className=" text-gray-500">
