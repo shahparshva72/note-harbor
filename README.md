@@ -11,5 +11,5 @@
 - [ ] React Markdown Text Editor
 - [x] Delete Note
 - [x] Redesign Login Page
-- [ ] Improve the archive and delete modal load and delay
-
+- [x] Improve the archive and delete modal load and delay
+- [ ] Replace modal with shadcn/ui dialog

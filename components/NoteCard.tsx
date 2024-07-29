@@ -14,81 +14,29 @@ import {
   NotebookPenIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
-import { toast } from "sonner";
+import { Note, NoteActionHandlers } from "@/types/note";
 
-interface NoteCardProps {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  isDeleted: boolean;
-  isArchived: boolean;
-}
-
-const supabase = createClient();
-
-const withEventHandlers =
-  (fn: () => Promise<void>) =>
-  (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation();
-    event.preventDefault();
-    fn().catch((error) => {
-      console.error(error.message);
-    });
-  };
+type NoteCardProps = Note & NoteActionHandlers;
 
 const NoteCard = ({
   id,
   title,
   description,
-  createdAt,
-  updatedAt,
-  isDeleted,
-  isArchived,
+  inserted_at,
+  updated_at,
+  is_deleted,
+  is_archived,
+  onDelete,
+  onArchive,
+  onRestore,
 }: NoteCardProps) => {
   const router = useRouter();
 
-  const deleteNote = withEventHandlers(async () => {
-    await supabase
-      .from("notes")
-      .update({ is_deleted: true, is_archived: false })
-      .match({ id });
-    router.refresh();
-    toast.success("Note moved to trash.");
-  });
-
-  const archiveNote = withEventHandlers(async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return router.push("/login");
-    }
-    await supabase
-      .from("notes")
-      .update({ is_archived: true })
-      .match({ id })
-      .eq("user_id", user.id);
-    router.refresh();
-    toast.success("Note archived.");
-  });
-
-  const permanentlyDeleteNote = withEventHandlers(async () => {
-    await supabase.from("notes").delete().match({ id });
-    router.refresh();
-    toast.success("Note permanently deleted.");
-  });
-
-  const moveBackToNotes = withEventHandlers(async () => {
-    await supabase
-      .from("notes")
-      .update({ is_deleted: false, is_archived: false })
-      .match({ id });
-    router.refresh();
-    toast.success("Note restored.");
-  });
+  const handleAction = (action: (id: string) => void) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    action(id);
+  };
 
   return (
     <Card className="relative flex flex-col gap-2 rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:bg-gray-100">
@@ -102,39 +50,32 @@ const NoteCard = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {isArchived ? (
-              <DropdownMenuItem onClick={moveBackToNotes}>
+            {is_archived ? (
+              <DropdownMenuItem onClick={handleAction(onRestore)}>
                 <ArchiveIcon className="mr-2 h-4 w-4" />
                 Unarchive
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem onClick={archiveNote}>
+              <DropdownMenuItem onClick={handleAction(onArchive)}>
                 <ArchiveIcon className="mr-2 h-4 w-4" />
                 Archive
               </DropdownMenuItem>
             )}
-            {isDeleted ? (
+            {is_deleted ? (
               <>
-                <DropdownMenuItem onClick={moveBackToNotes}>
+                <DropdownMenuItem onClick={handleAction(onRestore)}>
                   <TrashIcon className="mr-2 h-4 w-4" />
                   Restore
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={permanentlyDeleteNote}>
-                  <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
-                  Permanently delete
-                </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onClick={deleteNote}>
+              <DropdownMenuItem onClick={handleAction(onDelete)}>
                 <TrashIcon className="mr-2 h-4 w-4" />
                 Delete
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem>
-              <NotebookPenIcon
-                className="mr-2 h-4 w-4"
-                onClick={() => router.push(`/note/${id}`)}
-              />
+            <DropdownMenuItem onClick={() => router.push(`/note/${id}`)}>
+              <NotebookPenIcon className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -147,7 +88,7 @@ const NoteCard = ({
         <p className="mt-auto">
           Created:{" "}
           <span className="font-medium">
-            {new Date(createdAt).toLocaleDateString("en-US", {
+            {new Date(inserted_at).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",
@@ -157,7 +98,7 @@ const NoteCard = ({
         <p>
           Last updated:{" "}
           <span className="font-medium">
-            {new Date(updatedAt).toLocaleTimeString("en-US", {
+            {new Date(updated_at).toLocaleTimeString("en-US", {
               month: "short",
               day: "numeric",
               hour: "2-digit",

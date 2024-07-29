@@ -49,7 +49,7 @@ export default async function Layout({
         </div>
         <nav className="flex flex-col space-y-2 mt-10">
           <LinkButton href="/notes" title="Notes" />
-          <LinkButton href="/notes/archive" title="Archive" />
+          <LinkButton href="/notes/archived" title="Archive" />
           <LinkButton href="/notes/trash" title="Trash" />
         </nav>
         <div className="mt-auto justify-center">

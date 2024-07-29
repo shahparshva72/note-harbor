@@ -22,6 +22,6 @@ export default async function NotesPage() {
     .order("inserted_at", { ascending: false });
 
   return (
-    <NotesPageComponent notes={notes} noteType="all" />
+    <NotesPageComponent initialNotes={notes} noteType="all" />
   );
 }
