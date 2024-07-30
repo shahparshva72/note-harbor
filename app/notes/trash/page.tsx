@@ -20,7 +20,5 @@ export default async function ProtectedPage() {
     .eq("is_deleted", true)
     .order("inserted_at", { ascending: false });
 
-    return (
-      <NotesPageComponent initialNotes={notes} noteType="deleted" />
-    );
+  return <NotesPageComponent initialNotes={notes} noteType="deleted" />;
 }

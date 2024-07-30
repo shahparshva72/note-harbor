@@ -142,7 +142,7 @@
 }
 
 .close-button:after {
-  content: 'x';
+  content: "x";
   color: black;
 }
 

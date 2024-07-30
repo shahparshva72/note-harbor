@@ -21,7 +21,5 @@ export default async function NotesPage() {
     .neq("is_archived", true)
     .order("inserted_at", { ascending: false });
 
-  return (
-    <NotesPageComponent initialNotes={notes} noteType="all" />
-  );
+  return <NotesPageComponent initialNotes={notes} noteType="all" />;
 }

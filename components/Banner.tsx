@@ -1,8 +1,4 @@
-
-const Banner = ({ message, status }: {
-    message: string;
-    status: string;
-}) => {
+const Banner = ({ message, status }: { message: string; status: string }) => {
   if (!message) return null;
 
   const getBannerClassNames = (status: string) => {
@@ -18,8 +14,8 @@ const Banner = ({ message, status }: {
 
   return (
     <div
-      className={`absolute top-0 left-0 right-0 px-4 py-3 ${getBannerClassNames(
-        status
+      className={`absolute left-0 right-0 top-0 px-4 py-3 ${getBannerClassNames(
+        status,
       )}`}
       role="alert"
     >

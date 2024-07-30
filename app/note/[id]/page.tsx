@@ -7,7 +7,6 @@ export default async function NoteModal({
 }: {
   params: { id: string };
 }) {
-
   const idAsNumber = Number(noteId);
 
   if (isNaN(idAsNumber)) {
@@ -16,7 +15,9 @@ export default async function NoteModal({
 
   // check if the note exists in the database or display a 404 page
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return redirect("/login");
   }

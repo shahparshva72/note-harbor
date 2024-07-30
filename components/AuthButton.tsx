@@ -3,10 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-interface AuthButtonProps {
-  className?: string;
-}
-
 export default async function AuthButton({
   mode,
   className,
@@ -36,9 +32,7 @@ export default async function AuthButton({
     </div>
   ) : (
     <Button asChild>
-      <Link
-        href={mode === "register" ? "/register" : "/login"}
-      >
+      <Link href={mode === "register" ? "/register" : "/login"}>
         {mode === "register" ? "Sign up" : "Login"}
       </Link>
     </Button>

@@ -31,14 +31,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background antialiased font-mono",
+          "min-h-screen bg-background font-mono antialiased",
           fontSans.variable,
         )}
       >
         <div className="">
-              <main className="">{children}</main>
-              <Toaster />
-            </div>
+          <main className="">{children}</main>
+          <Toaster />
+        </div>
         {modal}
         <div id="modal-root" />
       </body>

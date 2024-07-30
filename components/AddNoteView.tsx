@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,81 +8,99 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const initialState = {
+const supabase = createClient();
+
+interface NoteData {
+  title: string;
+  description: string;
+}
+
+const initialState: NoteData = {
   title: "",
   description: "",
 };
 
-const AddNoteView = () => {
+const AddNoteView: React.FC = () => {
   const router = useRouter();
+  const [noteData, setNoteData] = useState<NoteData>(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [noteData, setNoteData] = useState(initialState);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setNoteData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
-  const addANote = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
+  const addANote = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setIsSubmitting(true);
 
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        return router.push("/login");
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        const { error } = await supabase.from("notes").insert([
+          {
+            ...noteData,
+            user_id: user.id,
+          },
+        ]);
+
+        if (error) throw error;
+
+        toast.success("Note has been added!");
+        router.refresh();
+        router.back();
+      } catch (error: any) {
+        console.error("Error adding a note:", error.message);
+        toast.error("Failed to add note. Please try again.");
+      } finally {
+        setIsSubmitting(false);
       }
+    },
+    [noteData, router],
+  );
 
-      const { title, description } = noteData;
-
-      await supabase.from("notes").insert([
-        {
-          title,
-          description,
-          user_id: user.id,
-        },
-      ]);
-
-      toast.success(`Note has been added!`);
-      router.refresh();
-    } catch (error: any) {
-      console.error("Error adding a note:", error.message);
-    }
-  };
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     router.back();
-  };
+  }, [router]);
 
   return (
     <form
-      className="flex flex-col gap-1 w-full p-1"
+      className="mx-auto flex w-full max-w-md flex-col gap-4 p-4"
       onSubmit={addANote}
-      method="dialog"
     >
       <h2 className="text-2xl font-bold">Add a Note</h2>
-      <div className="space-y-1">
-        <Input
-          id="title"
-          placeholder="Enter a title"
-          name="title"
-          onChange={(e) => setNoteData({ ...noteData, title: e.target.value })}
-        />
-      </div>
-      <div className="space-y-1">
-        <Textarea
-          placeholder="Write your note here..."
-          name="note"
-          onChange={(e) =>
-            setNoteData({ ...noteData, description: e.target.value })
-          }
-        />
-      </div>
-      <div className="flex justify-end gap-2 mt-auto">
+      <Input
+        id="title"
+        placeholder="Enter a title"
+        name="title"
+        value={noteData.title}
+        onChange={handleInputChange}
+        required
+      />
+      <Textarea
+        placeholder="Write your note here..."
+        name="description"
+        value={noteData.description}
+        onChange={handleInputChange}
+        required
+      />
+      <div className="mt-4 flex justify-end gap-2">
         <Button type="button" onClick={handleClose} variant="ghost">
           Cancel
         </Button>
-        <Button type="submit" autoFocus>
-          Add
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Adding..." : "Add"}
         </Button>
       </div>
     </form>

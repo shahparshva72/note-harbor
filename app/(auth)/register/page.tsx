@@ -30,7 +30,7 @@ export default function Register({
     }
 
     return redirect(
-      "/register?message=Check email to continue sign in process"
+      "/register?message=Check email to continue sign in process",
     );
   };
 
@@ -81,13 +81,13 @@ export default function Register({
               <SubmitButton
                 formAction={signUp}
                 pendingText={"Signing up..."}
-                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
               >
                 Sign Up
               </SubmitButton>
             </div>
             {searchParams?.message && (
-              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+              <p className="mt-4 bg-foreground/10 p-4 text-center text-foreground">
                 {searchParams.message}
               </p>
             )}

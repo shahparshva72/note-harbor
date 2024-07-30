@@ -32,11 +32,12 @@ const NoteCard = ({
 }: NoteCardProps) => {
   const router = useRouter();
 
-  const handleAction = (action: (id: string) => void) => (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    action(id);
-  };
+  const handleAction =
+    (action: (id: string) => void) => (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      action(id);
+    };
 
   return (
     <Card className="relative flex flex-col gap-2 rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:bg-gray-100">
@@ -82,9 +83,9 @@ const NoteCard = ({
         </DropdownMenu>
       </div>
 
-      <p className="text-sm text-gray-500 mt-0">{description}</p>
+      <p className="mt-0 text-sm text-gray-500">{description}</p>
 
-      <div className="flex flex-col text-gray-500 text-xs space-y-1 mt-auto">
+      <div className="mt-auto flex flex-col space-y-1 text-xs text-gray-500">
         <p className="mt-auto">
           Created:{" "}
           <span className="font-medium">

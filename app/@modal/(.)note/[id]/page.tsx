@@ -6,7 +6,6 @@ export default async function NoteModal({
 }: {
   params: { id: string };
 }) {
-
   const idAsNumber = Number(noteId);
 
   if (isNaN(idAsNumber)) {

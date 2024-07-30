@@ -21,7 +21,5 @@ export default async function ProtectedPage() {
     .eq("is_archived", true)
     .order("inserted_at", { ascending: false });
 
-    return (
-      <NotesPageComponent initialNotes={notes} noteType="archived" />
-    );
+  return <NotesPageComponent initialNotes={notes} noteType="archived" />;
 }

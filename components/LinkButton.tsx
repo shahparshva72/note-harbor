@@ -14,7 +14,7 @@ const LinkButton: React.FC<LinkButtonProps> = ({ href, title }) => {
     <Link
       key={href}
       href={href}
-      className={`flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 hover:w-full ${
+      className={`flex items-center gap-2 rounded-md p-2 hover:w-full hover:bg-gray-200 ${
         currentPath === href ? "bg-gray-200" : ""
       }`}
     >
