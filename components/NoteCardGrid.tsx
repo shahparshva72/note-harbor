@@ -15,7 +15,7 @@ const NoteCardGrid: React.FC<NoteCardGridProps> = ({
   notes,
   noteType,
   actionHandlers,
-  isLoading,
+  isLoading
 }) => {
   if (isLoading) {
     return <p>Loading notes...</p>;
@@ -49,9 +49,7 @@ const NoteCardGrid: React.FC<NoteCardGridProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.3 }}
           >
-            <Link href={`/note/${note.id}`}>
-              <NoteCard key={note.id} {...note} {...actionHandlers} />
-            </Link>
+            <NoteCard key={note.id} {...note} {...actionHandlers} />
           </motion.div>
         ))}
       </div>

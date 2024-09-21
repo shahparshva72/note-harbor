@@ -6,7 +6,7 @@ export default async function NotesPage() {
   const supabase = createClient();
 
   const {
-    data: { user },
+    data: { user }
   } = await supabase.auth.getUser();
 
   if (!user) {
