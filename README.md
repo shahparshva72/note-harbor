@@ -12,4 +12,4 @@
 - [x] Delete Note
 - [x] Redesign Login Page
 - [x] Improve the archive and delete modal load and delay
-- [ ] Replace modal with shadcn/ui dialog
+- [x] Replace modal with shadcn/ui sheet

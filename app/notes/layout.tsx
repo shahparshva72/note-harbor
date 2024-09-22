@@ -1,22 +1,22 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import AuthButton from "@/components/AuthButton";
-import { StickyNoteIcon, MenuIcon, XIcon, PlusIcon } from "lucide-react";
+import { StickyNoteIcon, MenuIcon, XIcon } from "lucide-react";
 import LinkButton from "@/components/LinkButton";
 import AddNoteButton from "@/components/AddNoteButton";
 
-import { SidePeekProvider } from "@/components/side-peek-context";
+import { SidePeekProvider } from '@/components/side-peek-context';
 import AddNoteView from "@/components/AddNoteView";
 
 export default async function Layout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
   const supabase = createClient();
 
   const {
-    data: { user }
+    data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {

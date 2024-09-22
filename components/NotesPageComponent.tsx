@@ -23,7 +23,6 @@ const DynamicNoteCardGrid = dynamic(() => import("./NoteCardGrid"), {
 });
 
 const NotesPageComponent = (props: {
-  initialNotes: Note[] | null;
   noteType: "all" | "archived" | "deleted";
 }) => {
   const [notes, setNotes] = useState<Note[] | null>(null);
@@ -32,9 +31,30 @@ const NotesPageComponent = (props: {
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
   useEffect(() => {
-    setNotes(props.initialNotes);
-    setIsLoading(false);
-  }, [props.initialNotes]);
+    const fetchNotes = async () => {
+      setIsLoading(true);
+      let query = supabase.from("notes").select("*");
+
+      if (props.noteType === "deleted") {
+        query = query.eq("is_deleted", true);
+      } else if (props.noteType === "archived") {
+        query = query.eq("is_archived", true).eq("is_deleted", false);
+      } else {
+        query = query.eq("is_archived", false).eq("is_deleted", false);
+      }
+
+      const { data, error } = await query.order("inserted_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching notes:", error);
+      } else {
+        setNotes(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchNotes();
+  }, [props.noteType]);
 
   const sortByCreatedDate = () => {
     if (notes) {

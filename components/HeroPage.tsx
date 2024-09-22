@@ -40,7 +40,7 @@ export default function Header() {
               <Image
                 priority
                 src={twitter}
-                alt="Follow us on Twitter"
+                alt="Follow me on Twitter"
                 layout="responsive"
               />
             </a>
