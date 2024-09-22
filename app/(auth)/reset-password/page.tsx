@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default async function ResetPassword({
-  searchParams,
+  searchParams
 }: {
   searchParams: { code: string; message: string };
 }) {
   const supabase = createClient();
 
   const {
-    data: { session },
+    data: { session }
   } = await supabase.auth.getSession();
 
   if (session) {
@@ -28,7 +28,7 @@ export default async function ResetPassword({
 
     if (password !== confirmPassword) {
       return redirect(
-        `/reset-password?message=Passwords do not match. Try again!`,
+        `/reset-password?message=Passwords do not match. Try again!`
       );
     }
 
@@ -37,7 +37,7 @@ export default async function ResetPassword({
         await supabase.auth.exchangeCodeForSession(searchParams.code);
       if (exchangeError) {
         return redirect(
-          `/reset-password?message=Unable to reset Password. Link expired!`,
+          `/reset-password?message=Unable to reset Password. Link expired!`
         );
       }
     }
@@ -47,12 +47,12 @@ export default async function ResetPassword({
     if (updateError) {
       console.log(updateError);
       return redirect(
-        `/reset-password?message=Unable to reset Password. Try again!`,
+        `/reset-password?message=Unable to reset Password. Try again!`
       );
     }
 
     return redirect(
-      `/login?message=Your Password has been reset successfully. Sign in.`,
+      `/login?message=Your Password has been reset successfully. Sign in.`
     );
   };
 

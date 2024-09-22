@@ -6,20 +6,12 @@ export default async function NotesPage() {
   const supabase = createClient();
 
   const {
-    data: { user },
+    data: { user }
   } = await supabase.auth.getUser();
 
   if (!user) {
     return redirect("/login");
   }
 
-  const { data: notes, error } = await supabase
-    .from("notes")
-    .select("*")
-    .eq("user_id", user.id)
-    .neq("is_deleted", true)
-    .neq("is_archived", true)
-    .order("inserted_at", { ascending: false });
-
-  return <NotesPageComponent initialNotes={notes} noteType="all" />;
+  return <NotesPageComponent noteType="all" />;
 }

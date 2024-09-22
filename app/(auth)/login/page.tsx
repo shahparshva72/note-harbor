@@ -1,11 +1,11 @@
-import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "../submit-button";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Login({
-  searchParams,
+  searchParams
 }: {
   searchParams: { message: string };
 }) {
@@ -18,7 +18,7 @@ export default function Login({
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password,
+      password
     });
 
     if (error) {
@@ -81,6 +81,9 @@ export default function Login({
             >
               Sign In
             </SubmitButton>
+          </div>
+          <div className="mt-6 text-center text-sm text-primary">
+            <Link href="/register">Sign Up Instead</Link>
           </div>
           {searchParams?.message && (
             <div

@@ -17,6 +17,8 @@ export interface NoteActionHandlers {
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
   onRestore: (id: string) => void;
+  onEdit: (id: string) => void;
+  permenantDelete: (id: string) => void;
 }
 
 export type noteType = "all" | "archived" | "deleted";

@@ -3,9 +3,11 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/app/(auth)/submit-button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Register({
-  searchParams,
+  searchParams
 }: {
   searchParams: { message: string };
 }) {
@@ -21,8 +23,8 @@ export default function Register({
       email,
       password,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
+        emailRedirectTo: `${origin}/auth/callback`
+      }
     });
 
     if (error) {
@@ -30,12 +32,15 @@ export default function Register({
     }
 
     return redirect(
-      "/register?message=Check email to continue sign in process",
+      "/register?message=Check email to continue sign in process"
     );
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <nav className="absolute left-4 top-4">
+        <div className="text-2xl font-bold text-gray-900">Note Harbor</div>
+      </nav>
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex flex-col items-center space-x-2">
@@ -77,14 +82,17 @@ export default function Register({
             />
           </div>
           <div className="flex flex-col space-y-4">
-            <div className="flex flex-row">
+            <div>
               <SubmitButton
                 formAction={signUp}
-                pendingText={"Signing up..."}
-                className="w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                pendingText="Signing in..."
+                className="hover:bg-primary-dark w-full rounded-lg bg-primary px-4 py-2 font-bold text-white"
               >
                 Sign Up
               </SubmitButton>
+            </div>
+            <div className="mt-6 text-center text-sm text-primary">
+              <Link href="/login">Sign In Instead</Link>
             </div>
             {searchParams?.message && (
               <p className="mt-4 bg-foreground/10 p-4 text-center text-foreground">

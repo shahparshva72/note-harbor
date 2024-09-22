@@ -4,7 +4,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuContent,
-  DropdownMenu,
+  DropdownMenu
 } from "@/components/ui/dropdown-menu";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,8 +12,8 @@ import {
   TrashIcon,
   MoreHorizontalIcon,
   NotebookPenIcon,
+  ArchiveRestore
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Note, NoteActionHandlers } from "@/types/note";
 
 type NoteCardProps = Note & NoteActionHandlers;
@@ -29,9 +29,9 @@ const NoteCard = ({
   onDelete,
   onArchive,
   onRestore,
+  onEdit,
+  permenantDelete
 }: NoteCardProps) => {
-  const router = useRouter();
-
   const handleAction =
     (action: (id: string) => void) => (event: React.MouseEvent) => {
       event.preventDefault();
@@ -65,8 +65,15 @@ const NoteCard = ({
             {is_deleted ? (
               <>
                 <DropdownMenuItem onClick={handleAction(onRestore)}>
-                  <TrashIcon className="mr-2 h-4 w-4" />
+                  <ArchiveRestore className="mr-2 h-4 w-4" />
                   Restore
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleAction(permenantDelete)}
+                  className="text-red-600"
+                >
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Delete Permanently
                 </DropdownMenuItem>
               </>
             ) : (
@@ -75,7 +82,7 @@ const NoteCard = ({
                 Delete
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem onClick={() => router.push(`/note/${id}`)}>
+            <DropdownMenuItem onClick={handleAction(onEdit)}>
               <NotebookPenIcon className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
@@ -92,7 +99,7 @@ const NoteCard = ({
             {new Date(inserted_at).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
-              day: "numeric",
+              day: "numeric"
             })}
           </span>
         </p>
@@ -103,7 +110,7 @@ const NoteCard = ({
               month: "short",
               day: "numeric",
               hour: "2-digit",
-              minute: "2-digit",
+              minute: "2-digit"
             })}
           </span>
         </p>

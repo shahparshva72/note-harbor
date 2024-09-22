@@ -1,9 +1,10 @@
 import EditNoteView from "@/components/EditNoteView";
+import { SidePeekProvider } from "@/components/side-peek-context";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function NoteModal({
-  params: { id: noteId },
+  params: { id: noteId }
 }: {
   params: { id: string };
 }) {
@@ -16,7 +17,7 @@ export default async function NoteModal({
   // check if the note exists in the database or display a 404 page
   const supabase = createClient();
   const {
-    data: { user },
+    data: { user }
   } = await supabase.auth.getUser();
   if (!user) {
     return redirect("/login");
@@ -33,5 +34,9 @@ export default async function NoteModal({
     return <div>404 - Note not found</div>;
   }
 
-  return <EditNoteView id={idAsNumber} />;
+  return (
+    <SidePeekProvider>
+      <EditNoteView id={idAsNumber} onClose={() => {}} />
+    </SidePeekProvider>
+  );
 }

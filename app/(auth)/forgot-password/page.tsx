@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import Banner from "@/components/Banner";
 
 export default function ForgotPassword({
-  searchParams,
+  searchParams
 }: {
   searchParams: { message: string; status: string };
 }) {
@@ -19,7 +19,7 @@ export default function ForgotPassword({
     const supabase = createClient();
 
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/reset-password`,
+      redirectTo: `${origin}/reset-password`
     });
 
     if (error) {

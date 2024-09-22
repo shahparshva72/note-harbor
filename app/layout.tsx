@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const fontSans = FontSans({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-mono"
 });
 
 const defaultUrl = process.env.VERCEL_URL
@@ -17,30 +17,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Note Harbor",
   description:
-    "A note-taking app to help you organize your thoughts and reminders.",
+    "A note-taking app to help you organize your thoughts and reminders."
 };
 
 export default function RootLayout({
-  children,
-  modal,
+  children
 }: Readonly<{
   children: React.ReactNode;
-  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body
         className={cn(
           "min-h-screen bg-background font-mono antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <div className="">
           <main className="">{children}</main>
           <Toaster />
         </div>
-        {modal}
-        <div id="modal-root" />
       </body>
     </html>
   );

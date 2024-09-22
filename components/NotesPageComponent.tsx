@@ -7,32 +7,54 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuItem
 } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { ListOrderedIcon, CalendarIcon, ClockIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Note, NoteAction, NoteActionHandlers } from "@/types/note";
+import EditNoteView from "./EditNoteView";
 
 const supabase = createClient();
 
 const DynamicNoteCardGrid = dynamic(() => import("./NoteCardGrid"), {
-  ssr: false,
+  ssr: false
 });
 
 const NotesPageComponent = (props: {
-  initialNotes: Note[] | null;
   noteType: "all" | "archived" | "deleted";
 }) => {
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
   useEffect(() => {
-    setNotes(props.initialNotes);
-    setIsLoading(false);
-  }, [props.initialNotes]);
+    const fetchNotes = async () => {
+      setIsLoading(true);
+      let query = supabase.from("notes").select("*");
+
+      if (props.noteType === "deleted") {
+        query = query.eq("is_deleted", true);
+      } else if (props.noteType === "archived") {
+        query = query.eq("is_archived", true).eq("is_deleted", false);
+      } else {
+        query = query.eq("is_archived", false).eq("is_deleted", false);
+      }
+
+      const { data, error } = await query.order("inserted_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching notes:", error);
+      } else {
+        setNotes(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchNotes();
+  }, [props.noteType]);
 
   const sortByCreatedDate = () => {
     if (notes) {
@@ -71,7 +93,7 @@ const NotesPageComponent = (props: {
     }
 
     setNotes((prevNotes) =>
-      prevNotes ? prevNotes.filter((note) => note.id !== id) : null,
+      prevNotes ? prevNotes.filter((note) => note.id !== id) : null
     );
 
     // Update the note in the database
@@ -93,6 +115,17 @@ const NotesPageComponent = (props: {
     onDelete: (id) => handleNoteAction(id, "delete"),
     onArchive: (id) => handleNoteAction(id, "archive"),
     onRestore: (id) => handleNoteAction(id, "restore"),
+    onEdit: (id) => setEditingNoteId(Number(id)),
+    permenantDelete: async (id) => {
+      const { error } = await supabase.from("notes").delete().match({ id });
+      if (error) {
+        console.error("Error deleting note:", error);
+        toast.error("Failed to delete note. Please try again.");
+        router.refresh();
+      } else {
+        toast.success("Note deleted permanently.");
+      }
+    }
   };
 
   const renderNoteTypeHeader = () => {
@@ -141,7 +174,6 @@ const NotesPageComponent = (props: {
         </DropdownMenu>
       </div>
       <div className="relative z-0">
-        {/* Pass props correctly to DynamicNoteCardGrid */}
         <DynamicNoteCardGrid
           notes={notes}
           noteType={props.noteType}
@@ -149,6 +181,12 @@ const NotesPageComponent = (props: {
           isLoading={isLoading}
         />
       </div>
+      {editingNoteId !== null && (
+        <EditNoteView
+          id={editingNoteId}
+          onClose={() => setEditingNoteId(null)}
+        />
+      )}
     </div>
   );
 };
