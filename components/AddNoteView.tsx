@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -16,6 +15,19 @@ import {
   SheetFooter
 } from "@/components/ui/sheet";
 import { useSidePeek } from "./side-peek-context";
+import {
+  BtnBold,
+  BtnItalic,
+  ContentEditableEvent,
+  Editor,
+  EditorProvider,
+  Toolbar,
+  BtnUndo,
+  BtnRedo,
+  BtnUnderline,
+  BtnBulletList,
+  BtnNumberedList
+} from "react-simple-wysiwyg";
 
 const supabase = createClient();
 
@@ -36,8 +48,14 @@ const AddNoteView: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | ContentEditableEvent
+    ) => {
+      const { name, value } = e.target as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
       setNoteData((prev) => ({ ...prev, [name]: value }));
     },
     []
@@ -77,10 +95,7 @@ const AddNoteView: React.FC = () => {
 
   return (
     <Sheet open={isAddNoteOpen} onOpenChange={setIsAddNoteOpen}>
-      <SheetContent
-        side={"right"}
-        className="w-[95vw] max-w-3xl p-6 sm:w-[600px] md:w-[50vw] lg:w-[800px]"
-      >
+      <SheetContent side={'right'}>
         <SheetHeader className="mb-6">
           <SheetTitle className="text-2xl">Add a Note</SheetTitle>
           <SheetDescription className="text-lg">
@@ -106,15 +121,37 @@ const AddNoteView: React.FC = () => {
             <label htmlFor="description" className="text-sm font-medium">
               Description
             </label>
-            <Textarea
-              id="description"
-              placeholder="Write your note here..."
-              name="description"
-              value={noteData.description}
-              onChange={handleInputChange}
-              required
-              className="min-h-[200px] text-lg"
-            />
+            <EditorProvider>
+              <Editor
+                id="description"
+                name="description"
+                value={noteData.description}
+                onChange={
+                  handleInputChange as (event: ContentEditableEvent) => void
+                }
+                containerProps={{
+                  style: {
+                    height: "16rem",
+                    width: "100%",
+                    resize: "vertical",
+                    borderRadius: "0.375rem",
+                    border: "1px solid #6B7280",
+                    padding: "0.75rem",
+                    fontSize: "0.875rem"
+                  }
+                }}
+              >
+                <Toolbar>
+                  <BtnBold />
+                  <BtnItalic />
+                  <BtnUnderline />
+                  <BtnBulletList />
+                  <BtnNumberedList />
+                  <BtnUndo />
+                  <BtnRedo />
+                </Toolbar>
+              </Editor>
+            </EditorProvider>
           </div>
         </form>
         <SheetFooter className="mt-8">

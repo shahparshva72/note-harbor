@@ -8,7 +8,7 @@ import { NotebookIcon, ArchiveIcon, TrashIcon } from "lucide-react";
 const icons = {
   Notes: NotebookIcon,
   Archive: ArchiveIcon,
-  Trash: TrashIcon,
+  Trash: TrashIcon
 };
 
 interface LinkButtonProps {

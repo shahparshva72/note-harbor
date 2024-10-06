@@ -43,7 +43,9 @@ const NotesPageComponent = (props: {
         query = query.eq("is_archived", false).eq("is_deleted", false);
       }
 
-      const { data, error } = await query.order("inserted_at", { ascending: false });
+      const { data, error } = await query.order("inserted_at", {
+        ascending: false
+      });
 
       if (error) {
         console.error("Error fetching notes:", error);

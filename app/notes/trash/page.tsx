@@ -13,5 +13,5 @@ export default async function ProtectedPage() {
     return redirect("/login");
   }
 
-  return <NotesPageComponent  noteType="deleted" />;
+  return <NotesPageComponent noteType="deleted" />;
 }

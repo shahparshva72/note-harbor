@@ -37,8 +37,8 @@ const NoteCardGrid: React.FC<NoteCardGridProps> = ({
         {noteType === "deleted"
           ? "No notes found. Deleted notes will appear here."
           : noteType === "archived"
-          ? "No notes found. Archived notes will appear here."
-          : "No notes found. Click on + to create a note."}
+            ? "No notes found. Archived notes will appear here."
+            : "No notes found. Click on + to create a note."}
       </p>
     );
   }
