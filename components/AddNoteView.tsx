@@ -1,11 +1,8 @@
 "use client";
-
 import React, { useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -16,6 +13,21 @@ import {
   SheetFooter
 } from "@/components/ui/sheet";
 import { useSidePeek } from "./side-peek-context";
+import {
+  BtnBold,
+  BtnItalic,
+  ContentEditableEvent,
+  Editor,
+  EditorProvider,
+  Toolbar,
+  BtnUndo,
+  BtnRedo,
+  BtnUnderline,
+  BtnBulletList,
+  BtnNumberedList
+} from "react-simple-wysiwyg";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addNote } from "@/lib/queries";
 
 const supabase = createClient();
 
@@ -31,56 +43,49 @@ const initialState: NoteData = {
 
 const AddNoteView: React.FC = () => {
   const { isAddNoteOpen, setIsAddNoteOpen } = useSidePeek();
-  const router = useRouter();
   const [noteData, setNoteData] = useState<NoteData>(initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, _] = useState(false);
+  const queryClient = useQueryClient();
+  
+  const addNoteMutation = useMutation({
+    mutationFn: async (noteData: NoteData) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+      return addNote({ ...noteData, user_id: user.id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success("Note has been added!");
+      setIsAddNoteOpen(false);
+      setNoteData(initialState);
+    },
+    onError: (error: any) => {
+      toast.error("Failed to add note. Please try again.");
+      console.error("Error adding note:", error.message);
+    }
+  });
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | ContentEditableEvent
+    ) => {
+      const { name, value } = e.target as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
       setNoteData((prev) => ({ ...prev, [name]: value }));
     },
     []
   );
 
-  const addANote = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setIsSubmitting(true);
-      try {
-        const {
-          data: { user }
-        } = await supabase.auth.getUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-        const { error } = await supabase.from("notes").insert([
-          {
-            ...noteData,
-            user_id: user.id
-          }
-        ]);
-        if (error) throw error;
-        toast.success("Note has been added!");
-        router.refresh();
-        setIsAddNoteOpen(false);
-      } catch (error: any) {
-        console.error("Error adding a note:", error.message);
-        toast.error("Failed to add note. Please try again.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [noteData, router, setIsAddNoteOpen]
-  );
-
+  const addANote = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    addNoteMutation.mutate(noteData);
+  };
   return (
     <Sheet open={isAddNoteOpen} onOpenChange={setIsAddNoteOpen}>
-      <SheetContent
-        side={"right"}
-        className="w-[95vw] max-w-3xl p-6 sm:w-[600px] md:w-[50vw] lg:w-[800px]"
-      >
+      <SheetContent side={'right'}>
         <SheetHeader className="mb-6">
           <SheetTitle className="text-2xl">Add a Note</SheetTitle>
           <SheetDescription className="text-lg">
@@ -106,15 +111,37 @@ const AddNoteView: React.FC = () => {
             <label htmlFor="description" className="text-sm font-medium">
               Description
             </label>
-            <Textarea
-              id="description"
-              placeholder="Write your note here..."
-              name="description"
-              value={noteData.description}
-              onChange={handleInputChange}
-              required
-              className="min-h-[200px] text-lg"
-            />
+            <EditorProvider>
+              <Editor
+                id="description"
+                name="description"
+                value={noteData.description}
+                onChange={
+                  handleInputChange as (event: ContentEditableEvent) => void
+                }
+                containerProps={{
+                  style: {
+                    height: "16rem",
+                    width: "100%",
+                    resize: "vertical",
+                    borderRadius: "0.375rem",
+                    border: "1px solid #6B7280",
+                    padding: "0.75rem",
+                    fontSize: "0.875rem"
+                  }
+                }}
+              >
+                <Toolbar>
+                  <BtnBold />
+                  <BtnItalic />
+                  <BtnUnderline />
+                  <BtnBulletList />
+                  <BtnNumberedList />
+                  <BtnUndo />
+                  <BtnRedo />
+                </Toolbar>
+              </Editor>
+            </EditorProvider>
           </div>
         </form>
         <SheetFooter className="mt-8">

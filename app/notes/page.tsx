@@ -4,10 +4,7 @@ import NotesPageComponent from "@/components/NotesPageComponent";
 
 export default async function NotesPage() {
   const supabase = createClient();
-
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return redirect("/login");

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -17,7 +16,19 @@ import {
   SheetFooter
 } from "@/components/ui/sheet";
 import { useSidePeek } from "./side-peek-context";
-import { X } from "lucide-react";
+import {
+  BtnBold,
+  BtnItalic,
+  ContentEditableEvent,
+  Editor,
+  EditorProvider,
+  Toolbar,
+  BtnUndo,
+  BtnRedo,
+  BtnUnderline,
+  BtnBulletList,
+  BtnNumberedList
+} from "react-simple-wysiwyg";
 
 interface NoteData {
   title: string;
@@ -75,8 +86,14 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
   }, [fetchNote, setIsEditNoteOpen]);
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | ContentEditableEvent
+    ) => {
+      const { name, value } = e.target as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
       setNoteData((prev) => ({ ...prev, [name]: value }));
     },
     []
@@ -110,10 +127,7 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
   if (isLoading) {
     return (
       <Sheet open={isEditNoteOpen} onOpenChange={setIsEditNoteOpen}>
-        <SheetContent
-          side={"right"}
-          className="w-[95vw] max-w-3xl p-6 sm:w-[600px] md:w-[50vw] lg:w-[800px]"
-        >
+        <SheetContent>
           <div className="flex h-full w-full items-center justify-center">
             <Spinner />
           </div>
@@ -126,8 +140,6 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
     return (
       <Sheet open={isEditNoteOpen} onOpenChange={setIsEditNoteOpen}>
         <SheetContent
-          side={"right"}
-          className="w-[95vw] max-w-3xl p-6 sm:w-[600px] md:w-[50vw] lg:w-[800px]"
         >
           <div className="text-center text-red-500">
             Error: {error}
@@ -144,14 +156,10 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
     <Sheet open={isEditNoteOpen} onOpenChange={setIsEditNoteOpen}>
       <SheetContent
         side={"right"}
-        className="w-[95vw] max-w-3xl p-6 sm:w-[600px] md:w-[50vw] lg:w-[800px]"
       >
         <SheetHeader className="mb-6">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-2xl">Edit Note</SheetTitle>
-            <Button onClick={handleClose} variant="ghost" size="icon">
-              <X className="h-4 w-4" />
-            </Button>
           </div>
           <SheetDescription className="text-lg">
             Modify your note's title and content
@@ -169,22 +177,45 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
               value={noteData.title}
               onChange={handleInputChange}
               className="text-lg font-semibold"
+
               required
             />
           </div>
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium">
-              Description
+              Content
             </label>
-            <Textarea
-              id="description"
-              name="description"
-              className="min-h-[200px] font-mono text-lg"
-              placeholder="- Item 1&#10;- Item 2&#10;- Item 3"
-              value={noteData.description}
-              onChange={handleInputChange}
-              required
-            />
+            <EditorProvider>
+              <Editor
+                id="description"
+                name="description"
+                value={noteData.description}
+                onChange={
+                  handleInputChange as (event: ContentEditableEvent) => void
+                }
+                containerProps={{
+                  style: {
+                    height: "16rem",
+                    width: "100%",
+                    resize: "vertical",
+                    borderRadius: "0.375rem",
+                    border: "1px solid #6B7280",
+                    padding: "0.75rem",
+                    fontSize: "0.875rem"
+                  }
+                }}
+              >
+                <Toolbar>
+                  <BtnBold />
+                  <BtnItalic />
+                  <BtnUnderline />
+                  <BtnBulletList />
+                  <BtnNumberedList />
+                  <BtnUndo />
+                  <BtnRedo />
+                </Toolbar>
+              </Editor>
+            </EditorProvider>
           </div>
         </form>
         <SheetFooter className="mt-8">
@@ -209,5 +240,11 @@ const EditNoteView: React.FC<{ id: number; onClose: () => void }> = ({
     </Sheet>
   );
 };
-
 export default EditNoteView;
+
+/*
+<SheetContent
+  side={"right"}
+  className="w-full sm:w-[75vw] md:w-[60vw] lg:w-[50vw] max-w-3xl p-6"
+>
+  */
