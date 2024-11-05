@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
   DropdownMenu,
@@ -15,6 +14,7 @@ import { Button } from "./ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getNotes, updateNote, deleteNotePermanently } from "@/lib/queries";
 import EditNoteView from "./EditNoteView";
+import { Note } from "@/types/note";
 
 const DynamicNoteCardGrid = dynamic(() => import("./NoteCardGrid"), {
   ssr: false
@@ -22,7 +22,6 @@ const DynamicNoteCardGrid = dynamic(() => import("./NoteCardGrid"), {
 
 const NotesPageComponent = ({ noteType }: { noteType: "all" | "archived" | "deleted" }) => {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
   const { data: notes, isLoading } = useQuery<Note[], Error>({

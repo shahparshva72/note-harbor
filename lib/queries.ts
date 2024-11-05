@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
-import { Note, NoteAction } from "@/types/note";
+import { NoteAction } from "@/types/note";
 
 const supabase = createClient();
 

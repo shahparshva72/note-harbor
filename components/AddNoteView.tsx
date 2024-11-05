@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -44,7 +43,6 @@ const initialState: NoteData = {
 
 const AddNoteView: React.FC = () => {
   const { isAddNoteOpen, setIsAddNoteOpen } = useSidePeek();
-  const router = useRouter();
   const [noteData, setNoteData] = useState<NoteData>(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
