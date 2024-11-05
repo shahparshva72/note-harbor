@@ -16,7 +16,6 @@ import {
   ArchiveRestore
 } from "lucide-react";
 import { Note, NoteActionHandlers } from "@/types/note";
-import PlainTextRenderer from "@/components/ui/plain-text-renderer";
 import WysiwygRenderer from "./ui/wysiwyg-renderer";
 
 type NoteCardProps = Note & NoteActionHandlers;

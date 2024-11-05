@@ -44,7 +44,7 @@ const initialState: NoteData = {
 const AddNoteView: React.FC = () => {
   const { isAddNoteOpen, setIsAddNoteOpen } = useSidePeek();
   const [noteData, setNoteData] = useState<NoteData>(initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, _] = useState(false);
   const queryClient = useQueryClient();
   
   const addNoteMutation = useMutation({
