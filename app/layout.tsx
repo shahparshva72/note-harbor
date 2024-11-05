@@ -3,6 +3,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import Providers from "./providers";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -33,10 +34,13 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <Providers>
+
         <div className="">
           <main className="">{children}</main>
           <Toaster />
         </div>
+        </Providers>
       </body>
     </html>
   );

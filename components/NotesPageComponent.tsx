@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
@@ -10,53 +10,56 @@ import {
   DropdownMenuItem
 } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
-import { createClient } from "@/utils/supabase/client";
 import { ListOrderedIcon, CalendarIcon, ClockIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { Note, NoteAction, NoteActionHandlers } from "@/types/note";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getNotes, updateNote, deleteNotePermanently } from "@/lib/queries";
 import EditNoteView from "./EditNoteView";
-
-const supabase = createClient();
 
 const DynamicNoteCardGrid = dynamic(() => import("./NoteCardGrid"), {
   ssr: false
 });
 
-const NotesPageComponent = (props: {
-  noteType: "all" | "archived" | "deleted";
-}) => {
-  const [notes, setNotes] = useState<Note[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const NotesPageComponent = ({ noteType }: { noteType: "all" | "archived" | "deleted" }) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      setIsLoading(true);
-      let query = supabase.from("notes").select("*");
+  const { data: notes, isLoading } = useQuery<Note[], Error>({
+    queryKey: ['notes', noteType],
+    queryFn: () => getNotes(noteType)
+  });
 
-      if (props.noteType === "deleted") {
-        query = query.eq("is_deleted", true);
-      } else if (props.noteType === "archived") {
-        query = query.eq("is_archived", true).eq("is_deleted", false);
-      } else {
-        query = query.eq("is_archived", false).eq("is_deleted", false);
-      }
+  const updateNoteMutation = useMutation({
+    mutationFn: ({ id, action }: { id: string, action: 'delete' | 'archive' | 'restore' }) => 
+      updateNote(id, action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success('Note updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update note');
+    }
+  });
 
-      const { data, error } = await query.order("inserted_at", {
-        ascending: false
-      });
+  const deleteNoteMutation = useMutation({
+    mutationFn: deleteNotePermanently,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success('Note permanently deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete note');
+    }
+  });
 
-      if (error) {
-        console.error("Error fetching notes:", error);
-      } else {
-        setNotes(data);
-      }
-      setIsLoading(false);
-    };
-
-    fetchNotes();
-  }, [props.noteType]);
+  const actionHandlers = {
+    onDelete: (id: string) => updateNoteMutation.mutate({ id, action: 'delete' }),
+    onArchive: (id: string) => updateNoteMutation.mutate({ id, action: 'archive' }),
+    onRestore: (id: string) => updateNoteMutation.mutate({ id, action: 'restore' }),
+    onEdit: (id: string) => setEditingNoteId(Number(id)),
+    permenantDelete: (id: string) => deleteNoteMutation.mutate(id)
+  };
 
   const sortByCreatedDate = () => {
     if (notes) {
@@ -65,7 +68,7 @@ const NotesPageComponent = (props: {
           new Date(b.inserted_at).getTime() - new Date(a.inserted_at).getTime()
         );
       });
-      setNotes(sorted);
+      queryClient.setQueryData(['notes', noteType], sorted);
     }
   };
 
@@ -76,62 +79,12 @@ const NotesPageComponent = (props: {
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );
       });
-      setNotes(sorted);
-    }
-  };
-
-  const handleNoteAction = async (id: string, action: NoteAction) => {
-    let updatedNote;
-    switch (action) {
-      case "delete":
-        updatedNote = { is_deleted: true, is_archived: false };
-        break;
-      case "archive":
-        updatedNote = { is_archived: true };
-        break;
-      case "restore":
-        updatedNote = { is_deleted: false, is_archived: false };
-        break;
-    }
-
-    setNotes((prevNotes) =>
-      prevNotes ? prevNotes.filter((note) => note.id !== id) : null
-    );
-
-    // Update the note in the database
-    const { error } = await supabase
-      .from("notes")
-      .update(updatedNote)
-      .match({ id });
-
-    if (error) {
-      console.error("Error updating note:", error);
-      toast.error("Failed to update note. Please try again.");
-      router.refresh();
-    } else {
-      toast.success(`Note ${action}d successfully.`);
-    }
-  };
-
-  const actionHandlers: NoteActionHandlers = {
-    onDelete: (id) => handleNoteAction(id, "delete"),
-    onArchive: (id) => handleNoteAction(id, "archive"),
-    onRestore: (id) => handleNoteAction(id, "restore"),
-    onEdit: (id) => setEditingNoteId(Number(id)),
-    permenantDelete: async (id) => {
-      const { error } = await supabase.from("notes").delete().match({ id });
-      if (error) {
-        console.error("Error deleting note:", error);
-        toast.error("Failed to delete note. Please try again.");
-        router.refresh();
-      } else {
-        toast.success("Note deleted permanently.");
-      }
+      queryClient.setQueryData(['notes', noteType], sorted);
     }
   };
 
   const renderNoteTypeHeader = () => {
-    switch (props.noteType) {
+    switch (noteType) {
       case "all":
         return <h1 className="text-2xl font-bold">All Notes</h1>;
       case "archived":
@@ -177,8 +130,8 @@ const NotesPageComponent = (props: {
       </div>
       <div className="relative z-0">
         <DynamicNoteCardGrid
-          notes={notes}
-          noteType={props.noteType}
+          notes={notes || null}
+          noteType={noteType}
           actionHandlers={actionHandlers}
           isLoading={isLoading}
         />
@@ -192,5 +145,4 @@ const NotesPageComponent = (props: {
     </div>
   );
 };
-
 export default NotesPageComponent;

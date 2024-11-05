@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useCallback, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -28,6 +27,8 @@ import {
   BtnBulletList,
   BtnNumberedList
 } from "react-simple-wysiwyg";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addNote } from "@/lib/queries";
 
 const supabase = createClient();
 
@@ -46,6 +47,25 @@ const AddNoteView: React.FC = () => {
   const router = useRouter();
   const [noteData, setNoteData] = useState<NoteData>(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+  
+  const addNoteMutation = useMutation({
+    mutationFn: async (noteData: NoteData) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+      return addNote({ ...noteData, user_id: user.id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success("Note has been added!");
+      setIsAddNoteOpen(false);
+      setNoteData(initialState);
+    },
+    onError: (error: any) => {
+      toast.error("Failed to add note. Please try again.");
+      console.error("Error adding note:", error.message);
+    }
+  });
 
   const handleInputChange = useCallback(
     (
@@ -61,38 +81,10 @@ const AddNoteView: React.FC = () => {
     []
   );
 
-  const addANote = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setIsSubmitting(true);
-      try {
-        const {
-          data: { user }
-        } = await supabase.auth.getUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-        const { error } = await supabase.from("notes").insert([
-          {
-            ...noteData,
-            user_id: user.id
-          }
-        ]);
-        if (error) throw error;
-        toast.success("Note has been added!");
-        router.refresh();
-        setIsAddNoteOpen(false);
-      } catch (error: any) {
-        console.error("Error adding a note:", error.message);
-        toast.error("Failed to add note. Please try again.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [noteData, router, setIsAddNoteOpen]
-  );
-
+  const addANote = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    addNoteMutation.mutate(noteData);
+  };
   return (
     <Sheet open={isAddNoteOpen} onOpenChange={setIsAddNoteOpen}>
       <SheetContent side={'right'}>
